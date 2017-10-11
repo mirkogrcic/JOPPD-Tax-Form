@@ -1,38 +1,42 @@
 package com.mirkogrcic.gui;
 
-import com.mirkogrcic.Config;
-import com.mirkogrcic.ConfigMap;
+import com.mirkogrcic.Data;
 import com.mirkogrcic.Locales.LocalizedText;
 import com.mirkogrcic.utils.SpringUtilities;
-
-import javax.swing.*;
+import java.awt.Color;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-import java.awt.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ConfigEditPanel extends JPanel {
+public class DataEditPanel extends JPanel {
 
-    private Config config;
-    private LocalizedText localizedText;
-
-    private Map<String, JTextField> textFieldsMap;
-
-    private final static Logger logger = Logger.getLogger(ConfigEditPanel.class.getName());
+    private final static Logger logger = LoggerFactory.getLogger(DataEditPanel.class.getName());
     private final static SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy/MM/dd");
 
-    public ConfigEditPanel(Config config){
+    private Data config;
+    private LocalizedText localizedText;
+
+    private List<JTextField> textFieldList;
+
+
+    public DataEditPanel(Data config){
         super(new SpringLayout());
         this.config = config;
         this.localizedText = LocalizedText.getInstance();
-        this.textFieldsMap = new HashMap<>();
+        this.textFieldList = new ArrayList<>();
 
         final String[] labels = {
                 localizedText.format("FullName") + ": ",
@@ -93,16 +97,32 @@ public class ConfigEditPanel extends JPanel {
             tf.getDocument().addDocumentListener(new TextFieldListener(command_names[i], tf));
             l.setLabelFor(tf);
             this.add(tf);
-            textFieldsMap.put(command_names[i], tf);
+            textFieldList.add(tf);
         }
 
         SpringUtilities.makeCompactGrid(this, labels.length, 2, 6, 6, 6, 6);
     }
 
-    private void updateFromConfig(){
-        ConfigMap configMap = new ConfigMap(config.getConfigRaw());
-        for( Map.Entry<String, JTextField> entry : textFieldsMap.entrySet() ){
-            entry.getValue().setText(configMap.get(entry.getKey()));
+    public void updateFromConfig(){
+        final String[] values = {
+                config.getFullName(),
+                config.getAddress(),
+                config.getEmail(),
+                config.getOib(),
+                config.getCityCodeResidence(),
+                config.getCityCodeWork(),
+
+                config.getGrossIncome().toString(),
+                dateFmt.format(config.getDate()),
+
+                config.getTax().toString(),
+                config.getSurtax().toString(),
+                config.getPension1().toString(),
+                config.getPension2().toString()
+        };
+        for( int i = 0; i < values.length; ++i ){
+            JTextField tf = textFieldList.get(i);
+            tf.setText(values[i]);
         }
     }
 
@@ -162,7 +182,7 @@ public class ConfigEditPanel extends JPanel {
                     break;
                 case "grossIncome":
                     try {
-                        config.setGrossIncome(Double.parseDouble(value));
+                        config.setGrossIncome(new BigDecimal(value));
                         this.field.setForeground(Color.BLACK);
                     } catch (NumberFormatException e) {
                         this.field.setForeground(Color.RED);
@@ -178,7 +198,7 @@ public class ConfigEditPanel extends JPanel {
                     break;
                 case "tax":
                     try {
-                        config.setTax(Double.parseDouble(value));
+                        config.setTax(new BigDecimal(value));
                         this.field.setForeground(Color.BLACK);
                     } catch (NumberFormatException e){
                         this.field.setForeground(Color.RED);
@@ -186,7 +206,7 @@ public class ConfigEditPanel extends JPanel {
                     break;
                 case "surtax":
                     try {
-                        config.setSurtax(Double.parseDouble(value));
+                        config.setSurtax(new BigDecimal(value));
                         this.field.setForeground(Color.BLACK);
                     } catch (NumberFormatException e) {
                         this.field.setForeground(Color.RED);
@@ -194,7 +214,7 @@ public class ConfigEditPanel extends JPanel {
                     break;
                 case "pension1":
                     try {
-                        config.setPension1(Double.parseDouble(value));
+                        config.setPension1(new BigDecimal(value));
                         this.field.setForeground(Color.BLACK);
                     } catch (NumberFormatException e) {
                         this.field.setForeground(Color.RED);
@@ -202,7 +222,7 @@ public class ConfigEditPanel extends JPanel {
                     break;
                 case "pension2":
                     try {
-                        config.setPension2(Double.parseDouble(value));
+                        config.setPension2(new BigDecimal(value));
                         this.field.setForeground(Color.BLACK);
                     } catch (NumberFormatException e) {
                         this.field.setForeground(Color.RED);

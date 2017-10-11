@@ -1,7 +1,7 @@
 package com.mirkogrcic.gui;
 
 
-import com.mirkogrcic.Config;
+import com.mirkogrcic.Data;
 import com.mirkogrcic.FormFiller.Data.JOPPD1DataImpl;
 import com.mirkogrcic.FormFiller.Data.JOPPD2DataImpl;
 import com.mirkogrcic.FormFiller.Data.JOPPD3DataImpl;
@@ -15,11 +15,10 @@ import com.mirkogrcic.Locales.LocalizedText;
 import com.mirkogrcic.calculator.Calculator;
 import com.mirkogrcic.calculator.Calculator.Result;
 import com.mirkogrcic.calculator.TaxValues;
+import com.mirkogrcic.calculator.TaxValuesImpl;
 import com.mirkogrcic.utils.Util;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.ComponentOrientation;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.RenderedImage;
@@ -29,28 +28,38 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ConfigWindow extends JFrame {
-    private Config config;
-    private ResultWindow resultWindow;
-    private LocalizedText localizedText;
+public class DataWindow extends JFrame {
 
-    private final static Logger logger = Logger.getLogger(com.mirkogrcic.Application.class.getName());
+    private final static Logger logger = LoggerFactory.getLogger(com.mirkogrcic.Application.class.getName());
     private final static SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy/MM/dd");
 
-    public ConfigWindow(Config config){
+    private Data config;
+    private ResultWindow resultWindow;
+    private LocalizedText localizedText;
+    private DataEditPanel inputPanel;
+
+
+    public DataWindow(Data config){
         this.config = config;
         localizedText = LocalizedText.getInstance();
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setTitle(localizedText.format("JOPPDFormFiller"));
 
-        JPanel inputPanel = new ConfigEditPanel(config);
+        inputPanel = new DataEditPanel(config);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -60,7 +69,7 @@ public class ConfigWindow extends JFrame {
         String[] langStrings = Locales.getTitles().toArray(new String[0]);
         JComboBox<String> langList = new JComboBox<>(langStrings);
         langList.setSelectedIndex(
-                this.getLocale().getISO3Language() == "eng" ? 0 : 1
+                this.getLocale().getISO3Language().equals("eng") ? 0 : 1
         );
         langList.setActionCommand("ChangeLanguage");
         langList.addActionListener(new ButtonClickListener());
@@ -117,7 +126,7 @@ public class ConfigWindow extends JFrame {
         public void actionPerformed(ActionEvent actionEvent) {
             String command = actionEvent.getActionCommand();
 
-            TaxValues taxValues = TaxValues.fromHumanReadable(config.getPension1(), config.getPension2(), config.getTax(), config.getSurtax());
+            TaxValues taxValues = TaxValuesImpl.fromHumanReadable(config.getPension1(), config.getPension2(), config.getTax(), config.getSurtax());
             Calculator calc = new Calculator(config.getGrossIncome(), taxValues);
             Result result = calc.calculate();
 
@@ -126,7 +135,7 @@ public class ConfigWindow extends JFrame {
                     if (actionEvent.getSource() instanceof JComboBox) {
                         JComboBox<String> comboBox = (JComboBox<String>) actionEvent.getSource();
                         String selectedValue = (String) comboBox.getSelectedItem();
-                        Locale newLocale = ConfigWindow.this.getLocale();
+                        Locale newLocale = DataWindow.this.getLocale();
                         switch (selectedValue) {
                             case "English":
                                 newLocale = new Locale("en_US");
@@ -135,14 +144,14 @@ public class ConfigWindow extends JFrame {
                                 newLocale = new Locale("hr_HR");
                                 break;
                         }
-                        ConfigWindow.this.setLocale(newLocale);
+                        DataWindow.this.setLocale(newLocale);
                     }
                     break;
                 }
 
                 case "Calculate": {
-                    resultWindow = new ResultWindow(config, result, ConfigWindow.this);
-                    resultWindow.setLocationRelativeTo(ConfigWindow.this);
+                    resultWindow = new ResultWindow(config, result, DataWindow.this);
+                    resultWindow.setLocationRelativeTo(DataWindow.this);
                     resultWindow.setVisible(true);
                     break;
                 }
@@ -150,23 +159,21 @@ public class ConfigWindow extends JFrame {
                 case "Load": {
                     String filePath;
 
-                    filePath = Util.showFileOpenDialog(ConfigWindow.this);
+                    filePath = Util.showFileOpenDialog(DataWindow.this);
                     logger.info(filePath);
                     try {
                         config.load(filePath);
+                        inputPanel.updateFromConfig();
 
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
-                        Util.showMessageBox(ConfigWindow.this, "File not found");
+                        Util.showMessageBox(DataWindow.this, "File not found");
                     } catch (IOException e) {
                         e.printStackTrace();
-                        Util.showMessageBox(ConfigWindow.this, "Error reading file");
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        Util.showMessageBox(ConfigWindow.this, "Error parsing file");
+                        Util.showMessageBox(DataWindow.this, "Error reading file");
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
-                        Util.showMessageBox(ConfigWindow.this, "Error parsing some properties in file");
+                        Util.showMessageBox(DataWindow.this, "Error parsing some properties in file");
                     }
                     break;
                 }
@@ -174,16 +181,21 @@ public class ConfigWindow extends JFrame {
                 case "Save": {
                     String filePath;
 
-                    filePath = Util.showFileSaveDialog(ConfigWindow.this);
+                    filePath = Util.showFileSaveDialog(DataWindow.this);
                     logger.info(filePath);
+                    try {
+                        new File(filePath).createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     try {
                         config.save(filePath);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
-                        Util.showMessageBox(ConfigWindow.this, "File not found");
+                        Util.showMessageBox(DataWindow.this, "File not found");
                     } catch (IOException e) {
                         e.printStackTrace();
-                        Util.showMessageBox(ConfigWindow.this, "Error reading file");
+                        Util.showMessageBox(DataWindow.this, "Error reading file");
                     }
                     break;
                 }
@@ -200,7 +212,7 @@ public class ConfigWindow extends JFrame {
                     JFileChooser chooser = new JFileChooser();
                     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                     //chooser.setAcceptAllFileFilterUsed(false);
-                    if (chooser.showSaveDialog(ConfigWindow.this) == JFileChooser.APPROVE_OPTION) {
+                    if (chooser.showSaveDialog(DataWindow.this) == JFileChooser.APPROVE_OPTION) {
                         logger.info("getSelectedFile() : " + chooser.getSelectedFile());
                         folderName = chooser.getSelectedFile().getAbsolutePath();
                     } else {
@@ -219,7 +231,7 @@ public class ConfigWindow extends JFrame {
                             ImageIO.write((RenderedImage) instance.getImage(), "png", new File(filePath));
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Util.showMessageBox(ConfigWindow.this, localizedText.format("ErrorSavingImages"));
+                            Util.showMessageBox(DataWindow.this, localizedText.format("ErrorSavingImages"));
                             return;
                         }
 
@@ -227,7 +239,7 @@ public class ConfigWindow extends JFrame {
                         //window.setVisible(true);
                         //imageWindows[i] = window;
                     }
-                    Util.showMessageBox(ConfigWindow.this, localizedText.format("ImagesSuccessfullySaved"));
+                    Util.showMessageBox(DataWindow.this, localizedText.format("ImagesSuccessfullySaved"));
                     logger.info("Saving images done");
 
                     // Show windows

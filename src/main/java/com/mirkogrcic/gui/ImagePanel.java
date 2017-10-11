@@ -1,8 +1,6 @@
 package com.mirkogrcic.gui;
 
 import com.mirkogrcic.gui.util.Point;
-
-import javax.swing.JPanel;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
@@ -10,11 +8,13 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.logging.Logger;
+import javax.swing.JPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ImagePanel extends JPanel implements MouseListener, MouseMotionListener, KeyListener {
-    private final static Logger logger = Logger.getLogger(com.mirkogrcic.Application.class.getName());
+    private final static Logger logger = LoggerFactory.getLogger(com.mirkogrcic.Application.class.getName());
     private final static double initialScale = 0.3d;
     private final static double scaleStep = 0.05;
     private final static double scaleFineStep = 0.01;

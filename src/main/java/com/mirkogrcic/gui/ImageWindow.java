@@ -1,20 +1,24 @@
 package com.mirkogrcic.gui;
 
 
-import com.mirkogrcic.Config;
+import com.mirkogrcic.Data;
 import com.mirkogrcic.calculator.Calculator.Result;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ImageWindow extends JFrame {
-    private final static Logger logger = Logger.getLogger(com.mirkogrcic.Application.class.getName());
+    private final static Logger logger = LoggerFactory.getLogger(com.mirkogrcic.Application.class.getName());
 
-    private Config config;
+    private Data config;
     private Result result;
 
     public ImageWindow(Image image){
@@ -27,7 +31,7 @@ public class ImageWindow extends JFrame {
         this.setSize(500,500);
     }
 
-    public ImageWindow(Config config, Result result){
+    public ImageWindow(Data config, Result result){
         this.config = config;
         this.result = result;
 

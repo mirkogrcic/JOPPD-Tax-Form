@@ -1,16 +1,20 @@
 package com.mirkogrcic.utils;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Util {
     /**
@@ -18,7 +22,7 @@ public class Util {
      * YY: 2017 -> 17
      * DDD: Day of the year 2017/01/01 -> 1
      *
-     * @param date
+     * @param date the date
      * @return YYDDD
      */
     public static String getMark(Date date){
@@ -46,6 +50,15 @@ public class Util {
     }
 
     public static String formatDoubleHR(double value){
+        DecimalFormat decimalFmt = new DecimalFormat("###,###,###,##0.00");
+        DecimalFormatSymbols symbols = decimalFmt.getDecimalFormatSymbols();
+        symbols.setDecimalSeparator(',');
+        symbols.setGroupingSeparator('.');
+        decimalFmt.setDecimalFormatSymbols(symbols);
+        return decimalFmt.format(value);
+    }
+
+    public static String formatDoubleHR(BigDecimal value){
         DecimalFormat decimalFmt = new DecimalFormat("###,###,###,##0.00");
         DecimalFormatSymbols symbols = decimalFmt.getDecimalFormatSymbols();
         symbols.setDecimalSeparator(',');
@@ -84,7 +97,7 @@ public class Util {
     public static String showFileOpenDialog(Component parent){
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.setFileFilter(new FileNameExtensionFilter("Properties file(.properties)", "properties"));
+        chooser.setFileFilter(new FileNameExtensionFilter("Properties file(.ini)", "ini"));
         if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
             return chooser.getSelectedFile().getAbsolutePath();
         }
@@ -96,7 +109,7 @@ public class Util {
     public static String showFileSaveDialog(Component parent){
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.setFileFilter(new FileNameExtensionFilter("Properties file(.properties)", "properties"));
+        chooser.setFileFilter(new FileNameExtensionFilter("Properties file(.init)", "ini"));
         if (chooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
             return chooser.getSelectedFile().getAbsolutePath();
         }
@@ -118,5 +131,9 @@ public class Util {
         if( source != null )
             e.addSuppressed(source);
         return e;
+    }
+
+    public static String capitalizeFirst(String str) {
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 }

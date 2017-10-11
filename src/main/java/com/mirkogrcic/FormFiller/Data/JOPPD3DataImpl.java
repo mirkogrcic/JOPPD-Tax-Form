@@ -1,56 +1,56 @@
 package com.mirkogrcic.FormFiller.Data;
 
-import com.mirkogrcic.Config;
+import com.mirkogrcic.Data;
 import com.mirkogrcic.calculator.Calculator;
 import com.mirkogrcic.calculator.Calculator.Result;
 import com.mirkogrcic.utils.Util;
 
 public class JOPPD3DataImpl implements JOPPD3Data {
-    private Config config;
+    private Data data;
     private Result result;
 
-    public JOPPD3DataImpl(Config config, Calculator calculator) {
-        this(config, calculator.getResult());
+    public JOPPD3DataImpl(Data data, Calculator calculator) {
+        this(data, calculator.getResult());
     }
 
-    public JOPPD3DataImpl(Config config, Result result) {
-        this.config = config;
+    public JOPPD3DataImpl(Data data, Result result) {
+        this.data = data;
         this.result = result;
     }
 
     @Override
     public String getDate() {
-        return Util.formatDateHR(config.getDate());
+        return Util.formatDateHR(data.getDate());
     }
 
     @Override
     public String getDateMark() {
-        return Util.getMark(config.getDate());
+        return Util.getMark(data.getDate());
     }
 
     @Override
     public String getSubmitterOIB() {
-        return config.getOib();
+        return data.getOib();
     }
 
     @Override
     public String getCityCodeResidence() {
-        return config.getCityCodeResidence();
+        return data.getCityCodeResidence();
     }
 
     @Override
     public String getCityCodeWork() {
-        return config.getCityCodeWork();
+        return data.getCityCodeWork();
     }
 
     @Override
     public String getSubmitterFullName() {
-        return config.getFullName();
+        return data.getFullName();
     }
 
     @Override
     public String getGrossIncome() {
-        return Util.formatDoubleHR(config.getGrossIncome());
+        return Util.formatDoubleHR(data.getGrossIncome());
     }
 
     @Override

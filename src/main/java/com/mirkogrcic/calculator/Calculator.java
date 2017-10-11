@@ -1,28 +1,29 @@
 package com.mirkogrcic.calculator;
 
 
+import java.math.BigDecimal;
+
 public class Calculator {
-    private Double grossIncome;  // Bruto plaća
+    private BigDecimal grossIncome;  // Bruto plaća
 
     private TaxValues taxValues;
     private Result result;
 
-
     public Calculator(){
-        this(0d, new TaxValues());
+
     }
 
-    public Calculator(double grossIncome, TaxValues taxValues){
+    public Calculator(BigDecimal grossIncome, TaxValues taxValues){
         this.grossIncome = grossIncome;
         this.taxValues = taxValues;
     }
 
 
-    public Double getGrossIncome(){
+    public BigDecimal getGrossIncome(){
         return this.grossIncome;
     }
 
-    public void setGrossIncome(Double value){
+    public void setGrossIncome(BigDecimal value){
         this.grossIncome = value;
     }
 
@@ -42,91 +43,113 @@ public class Calculator {
 
 
     public Result calculate(){
+        if (this.grossIncome == null)
+            throw new IllegalStateException("grossIncome must be specified");
+
+        if (this.taxValues == null)
+            throw new IllegalStateException("taxValues must be specified");
+
         this.result = new Result();
 
-        this.result.pension1 = this.grossIncome * this.taxValues.pension1;
-        this.result.pension2 = this.grossIncome * this.taxValues.pension2;
-        this.result.pension = this.result.pension1 + this.result.pension2;
-        this.result.grossPensionSub = this.grossIncome - this.result.pension;
+        this.result.pension1 = this.grossIncome.multiply(this.taxValues.getPension1());
+        this.result.pension2 = this.grossIncome.multiply(this.taxValues.getPension2());
+        this.result.pension = this.result.pension1.add(this.result.pension2);
+        this.result.grossPensionSub = this.grossIncome.subtract(this.result.pension);
 
-        this.result.tax = this.result.grossPensionSub * this.taxValues.tax;
-        this.result.surtax = this.result.tax * this.taxValues.surtax;
-        this.result.taxSurtaxSum = this.result.tax + this.result.surtax;
+        this.result.tax = this.result.grossPensionSub.multiply(this.taxValues.getTax());
+        this.result.surtax = this.result.tax.multiply(this.taxValues.getSurtax());
+        this.result.taxSurtaxSum = this.result.tax.add(this.result.surtax);
 
-        this.result.totalSum = this.result.pension + this.result.taxSurtaxSum;
-        this.result.netIncome = this.grossIncome - this.result.totalSum;
+        this.result.totalSum = this.result.pension.add(this.result.taxSurtaxSum);
+        this.result.netIncome = this.grossIncome.subtract(this.result.totalSum);
 
         return this.result;
     }
 
 
     public class Result implements com.mirkogrcic.calculator.Result {
-        private Double pension1;
-        private Double pension2;
-        private Double pension;
-        private Double grossPensionSub;  // gross - pension
+        private BigDecimal pension1;
+        private BigDecimal pension2;
+        private BigDecimal pension;
+        private BigDecimal grossPensionSub;  // gross - pension
 
-        private Double tax;
-        private Double surtax;
-        private Double taxSurtaxSum;
+        private BigDecimal tax;
+        private BigDecimal surtax;
+        private BigDecimal taxSurtaxSum;
 
-        private Double totalSum;
-        private Double netIncome;
+        private BigDecimal totalSum;
+        private BigDecimal netIncome;
 
         public Result(){
 
         }
 
         @Override
-        public Double getPension1() {
+        public BigDecimal getPension1() {
             return pension1;
         }
 
         @Override
-        public Double getPension2() {
+        public BigDecimal getPension2() {
             return pension2;
         }
 
         @Override
-        public Double getPension() {
+        public BigDecimal getPension() {
             return pension;
         }
 
         @Override
-        public Double getGrossPensionSub() {
+        public BigDecimal getGrossPensionSub() {
             return grossPensionSub;
         }
 
         @Override
-        public Double getTax() {
+        public BigDecimal getTax() {
             return tax;
         }
 
         @Override
-        public Double getSurtax() {
+        public BigDecimal getSurtax() {
             return surtax;
         }
 
         @Override
-        public Double getTaxSurtaxSum() {
+        public BigDecimal getTaxSurtaxSum() {
             return taxSurtaxSum;
         }
 
         @Override
-        public Double getTotalSum() {
+        public BigDecimal getTotalSum() {
             return totalSum;
         }
 
         @Override
-        public Double getNetIncome() {
+        public BigDecimal getNetIncome() {
             return netIncome;
         }
 
         @Override
         public boolean equals(Object o) {
+            if (o == this)
+                return true;
+
             if( !( o instanceof Result) )
-                throw new IllegalArgumentException(String.format("Object must be of type '%s'", Result.class.getName()));
-            return super.equals(o);
+                return false;
+
+            Result result = (Result) o;
+
+            return result.pension1.equals(pension1)
+                    && result.pension2.equals(pension2)
+                    && result.pension.equals(pension)
+                    && result.grossPensionSub.equals(grossPensionSub)
+
+                    && result.tax.equals(tax)
+                    && result.surtax.equals(surtax)
+                    && result.taxSurtaxSum.equals(taxSurtaxSum)
+
+                    && result.totalSum.equals(totalSum)
+                    && result.netIncome.equals(netIncome);
         }
     }
 

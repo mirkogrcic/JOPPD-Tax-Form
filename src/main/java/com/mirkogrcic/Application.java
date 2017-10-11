@@ -1,26 +1,27 @@
 package com.mirkogrcic;
 
-import com.mirkogrcic.gui.ConfigWindow;
-
-import javax.swing.*;
+import com.mirkogrcic.gui.DataWindow;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Locale;
-import java.util.logging.Logger;
+import javax.swing.JFrame;
+import org.apache.log4j.BasicConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Application {
-    private Config config;
-    private final static Logger logger = Logger.getLogger(Application.class.getName());
+    private Data data;
+    private final static Logger logger = LoggerFactory.getLogger(Application.class.getName());
 
     public static void main(String[] args) throws IOException, ParseException {
-        Config config = new Config();
+        BasicConfigurator.configure();
+        Data data = new Data();
         if( args.length == 0 ){
-            config.load_default();
+            data.loadStream(System.class.getResourceAsStream("/data.ini"));
         }else{
-            config.load(args[0]);
+            data.load(args[0]);
         }
 
-        JFrame frame = new ConfigWindow(config);
+        JFrame frame = new DataWindow(data);
         frame.setVisible(true);
     }
 }

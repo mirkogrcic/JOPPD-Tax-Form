@@ -1,15 +1,14 @@
 package com.mirkogrcic.Locales;
 
 import com.mirkogrcic.utils.UTF8Control;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LocalizedText {
+    private static Logger logger = LoggerFactory.getLogger(LocalizedText.class);
     private static LocalizedText instance;
 
     Locale locale;
@@ -20,8 +19,7 @@ public class LocalizedText {
         this.fmt = new MessageFormat("");
 
         updateLocale();
-
-        System.out.println(String.format("Selected locale: %s-%s", locale.getISO3Country(), locale.getISO3Language()));
+        logger.info("Selected locale: {}-{}", locale.getISO3Country(), locale.getISO3Language());
     }
 
     public String format(String fmtName) {

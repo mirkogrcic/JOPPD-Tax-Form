@@ -1,21 +1,23 @@
 package com.mirkogrcic.calculator;
 
+import java.math.BigDecimal;
+
 public interface Result {
-    Double getPension1();
+    BigDecimal getPension1();
 
-    Double getPension2();
+    BigDecimal getPension2();
 
-    Double getPension();
+    BigDecimal getPension();
 
-    Double getGrossPensionSub();
+    BigDecimal getGrossPensionSub();
 
-    Double getTax();
+    BigDecimal getTax();
 
-    Double getSurtax();
+    BigDecimal getSurtax();
 
-    Double getTaxSurtaxSum();
+    BigDecimal getTaxSurtaxSum();
 
-    Double getTotalSum();
+    BigDecimal getTotalSum();
 
-    Double getNetIncome();
+    BigDecimal getNetIncome();
 }

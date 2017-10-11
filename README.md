@@ -4,7 +4,7 @@ This application is used to calculate income tax from abroad based on a second i
 
 Be sure to consult a tax adviser before using the application.
 
-# Croatian
+# Hrvatski
 Ova aplikacija služi za izračun poreza na dohodak iz inozemstva po osnovi drugog dohodka i za ispunjenje JOPPD obrazca koji se predaje poreznoj upravi u Hrvatskoj.
 
 Obavezno se posavjetujte sa poreznim savjetnikom prije korištenja aplikacije.

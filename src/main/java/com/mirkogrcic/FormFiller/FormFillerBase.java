@@ -1,17 +1,13 @@
 package com.mirkogrcic.FormFiller;
 
 
-import com.mirkogrcic.Config;
 import com.mirkogrcic.FormFiller.Elements.Element;
-import com.mirkogrcic.FormFiller.Elements.TextElement;
-import com.mirkogrcic.calculator.Calculator;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
+import javax.imageio.ImageIO;
 
 public abstract class FormFillerBase<D> implements FormFiller<D> {
     protected Image image;

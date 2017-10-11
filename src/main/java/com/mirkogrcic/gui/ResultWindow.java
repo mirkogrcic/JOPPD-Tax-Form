@@ -1,31 +1,42 @@
 package com.mirkogrcic.gui;
 
 
-import com.mirkogrcic.Config;
+import com.mirkogrcic.Data;
 import com.mirkogrcic.Locales.LocalizedText;
 import com.mirkogrcic.calculator.Calculator.Result;
 import com.mirkogrcic.utils.SpringUtilities;
 import com.mirkogrcic.utils.Util;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.ComponentOrientation;
+import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.logging.Logger;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
+import javax.swing.SwingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ResultWindow extends JDialog {
-    private final static Logger logger = Logger.getLogger(com.mirkogrcic.Application.class.getName());
-    private Config config;
+    private final static Logger logger = LoggerFactory.getLogger(com.mirkogrcic.Application.class.getName());
+    private Data config;
     private Result result;
     private LocalizedText localizedText;
 
-    public ResultWindow(Config config, Result result){
+    public ResultWindow(Data config, Result result){
         this(config, result, null);
     }
 
-    public ResultWindow(Config config, Result result, Frame parent){
+    public ResultWindow(Data config, Result result, Frame parent){
         super(parent, "Results", true);
         this.config = config;
         this.result = result;
@@ -36,9 +47,13 @@ public class ResultWindow extends JDialog {
         SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy/MM/dd");
         DecimalFormat decimalFmt = new DecimalFormat("0.00");
 
-        Double totalSumPercent = result.getTotalSum() / config.getGrossIncome() * 100;
+        BigDecimal totalSumPercent = result.getTotalSum()
+                .divide(config.getGrossIncome(), 0, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100L));
 
-        Double netIncomePercent = result.getNetIncome() / config.getGrossIncome() * 100;
+        BigDecimal netIncomePercent = result.getNetIncome()
+                .divide(config.getGrossIncome(), 0, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100));
 
         final String[] labels = {
                 localizedText.format("Pension1") + ": ",
@@ -55,7 +70,7 @@ public class ResultWindow extends JDialog {
         };
 
 
-        final Double[] values = {
+        final BigDecimal[] values = {
                 result.getPension1(),
                 result.getPension2(),
                 result.getPension(),
