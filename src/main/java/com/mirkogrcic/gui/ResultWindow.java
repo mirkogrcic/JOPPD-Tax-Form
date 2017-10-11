@@ -48,11 +48,11 @@ public class ResultWindow extends JDialog {
         DecimalFormat decimalFmt = new DecimalFormat("0.00");
 
         BigDecimal totalSumPercent = result.getTotalSum()
-                .divide(config.getGrossIncome(), 0, RoundingMode.HALF_UP)
+                .divide(config.getGrossIncome(), 20, RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100L));
 
         BigDecimal netIncomePercent = result.getNetIncome()
-                .divide(config.getGrossIncome(), 0, RoundingMode.HALF_UP)
+                .divide(config.getGrossIncome(), 20, RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100));
 
         final String[] labels = {

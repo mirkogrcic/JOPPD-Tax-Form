@@ -39,10 +39,10 @@ public class TaxValuesImpl implements TaxValues {
 
     public void loadHumanReadable(BigDecimal pension1, BigDecimal pension2, BigDecimal tax, BigDecimal surtax){
         BigDecimal hundred = BigDecimal.valueOf(100d);
-        this.pension1 = pension1.divide(hundred, 0, RoundingMode.HALF_UP);
-        this.pension2 = pension2.divide(hundred, 0, RoundingMode.HALF_UP);
-        this.tax = tax.divide(hundred, 0, RoundingMode.HALF_UP);
-        this.surtax = surtax.divide(hundred, 0, RoundingMode.HALF_UP);
+        this.pension1 = pension1.divide(hundred, 20, RoundingMode.HALF_UP);
+        this.pension2 = pension2.divide(hundred, 20, RoundingMode.HALF_UP);
+        this.tax = tax.divide(hundred, 20, RoundingMode.HALF_UP);
+        this.surtax = surtax.divide(hundred, 20, RoundingMode.HALF_UP);
     }
 
     @Override
