@@ -1,8 +1,8 @@
 # JOPPD-Tax-Form
 
-![Alt text](/images/Main window.jpg?raw=true "Screenshot")
+![Alt text](/images/Main_window.jpg?raw=true "Screenshot")
 
-![Alt text](/images/Calculation results.jpg?raw=true "Screenshot")
+![Alt text](/images/Calculation_results.jpg?raw=true "Screenshot")
 
 # English
 This application is used to calculate income tax from abroad based on a second income and to fill out the JOPPD form that is submitted to the tax administration in Croatia.
