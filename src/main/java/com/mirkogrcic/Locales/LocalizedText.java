@@ -2,6 +2,8 @@ package com.mirkogrcic.Locales;
 
 import com.mirkogrcic.utils.UTF8Control;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import org.slf4j.Logger;
@@ -11,9 +13,10 @@ public class LocalizedText {
     private static Logger logger = LoggerFactory.getLogger(LocalizedText.class);
     private static LocalizedText instance;
 
-    Locale locale;
-    ResourceBundle messages;
-    MessageFormat fmt;
+    private Locale locale;
+    private ResourceBundle messages;
+    private MessageFormat fmt;
+    private List<LocaleChangeListener> localeChangeListeners = new ArrayList<>();
 
     private LocalizedText() {
         this.fmt = new MessageFormat("");
@@ -42,11 +45,20 @@ public class LocalizedText {
     public void updateLocale(){
         locale = Locale.getDefault(Locale.Category.DISPLAY);
         messages = ResourceBundle.getBundle("lang", locale, new UTF8Control());
+        Locale oldLocale = fmt.getLocale();
         fmt.setLocale(locale);
+
+        for (LocaleChangeListener localeChangeListener : localeChangeListeners) {
+            localeChangeListener.localeChanged(oldLocale, locale);
+        }
     }
 
     public Boolean localeChanged(){
         return instance.locale != Locale.getDefault(Locale.Category.DISPLAY);
+    }
+
+    public void addLocaleChangeListener(LocaleChangeListener localeChangeListener) {
+        localeChangeListeners.add(localeChangeListener);
     }
 
     public static LocalizedText getInstance(){
@@ -61,5 +73,9 @@ public class LocalizedText {
             instance.updateLocale();
         }
         return instance;
+    }
+
+    public interface LocaleChangeListener {
+        void localeChanged(Locale oldLocale, Locale newLocale);
     }
 }

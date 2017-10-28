@@ -69,11 +69,11 @@ public class DataWindow extends JFrame {
         String[] langStrings = Locales.getTitles().toArray(new String[0]);
         JComboBox<String> langList = new JComboBox<>(langStrings);
         langList.setSelectedIndex(
-                this.getLocale().getISO3Language().equals("eng") ? 0 : 1
+                this.getLocale().getISO3Language().equals("eng") ? 1 : 0
         );
         langList.setActionCommand("ChangeLanguage");
         langList.addActionListener(new ButtonClickListener());
-        //mainPanel.add(langList);
+        mainPanel.add(langList);
 
         mainPanel.add(inputPanel);
 
@@ -136,15 +136,18 @@ public class DataWindow extends JFrame {
                         JComboBox<String> comboBox = (JComboBox<String>) actionEvent.getSource();
                         String selectedValue = (String) comboBox.getSelectedItem();
                         Locale newLocale = DataWindow.this.getLocale();
+                        logger.debug("Selected locale: {}", selectedValue);
                         switch (selectedValue) {
-                            case "English":
-                                newLocale = new Locale("en_US");
+                            case "English US":
+                                newLocale = new Locale("en", "US");
                                 break;
-                            case "Croatian":
-                                newLocale = new Locale("hr_HR");
+                            case "Hrvatski":
+                                newLocale = new Locale("hr", "HR");
                                 break;
                         }
-                        DataWindow.this.setLocale(newLocale);
+                        Locale.setDefault(newLocale);
+                        DataWindow.this.localizedText.updateLocale();
+                        logger.info("Updated locale: {}", newLocale);
                     }
                     break;
                 }

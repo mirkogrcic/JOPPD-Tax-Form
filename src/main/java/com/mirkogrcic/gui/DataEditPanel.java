@@ -29,31 +29,14 @@ public class DataEditPanel extends JPanel {
     private Data config;
     private LocalizedText localizedText;
 
-    private List<JTextField> textFieldList;
+    private List<JLabel> labelList = new ArrayList<>();
+    private List<JTextField> textFieldList = new ArrayList<>();
 
 
     public DataEditPanel(Data config){
         super(new SpringLayout());
         this.config = config;
         this.localizedText = LocalizedText.getInstance();
-        this.textFieldList = new ArrayList<>();
-
-        final String[] labels = {
-                localizedText.format("FullName") + ": ",
-                localizedText.format("Address") + ": ",
-                localizedText.format("Email") + ": ",
-                localizedText.format("OIB") + ": ",
-                localizedText.format("CityCodeResidence") + ": ",
-                localizedText.format("CityCodeWork") + ": ",
-
-                localizedText.format("GrossIncome") + ": ",
-                localizedText.format("DateOfPayment") + "[YYYY/MM/DD]: ",
-
-                localizedText.format("Tax") + "[%]: ",
-                localizedText.format("Surtax") + "[%]: ",
-                localizedText.format("Pension1") + "[%]: ",
-                localizedText.format("Pension2") + "[%]: ",
-        };
 
         final String[] command_names = {
                 "fullName",
@@ -89,9 +72,10 @@ public class DataEditPanel extends JPanel {
                 config.getPension2().toString()
         };
 
-        for( int i = 0; i < labels.length; ++i ){
-            JLabel l = new JLabel(labels[i], JLabel.TRAILING);
+        for( int i = 0; i < command_names.length; ++i ){
+            JLabel l = new JLabel("", JLabel.TRAILING);
             this.add(l);
+            labelList.add(l);
 
             JTextField tf = new JTextField(values[i],30);
             tf.getDocument().addDocumentListener(new TextFieldListener(command_names[i], tf));
@@ -100,7 +84,37 @@ public class DataEditPanel extends JPanel {
             textFieldList.add(tf);
         }
 
-        SpringUtilities.makeCompactGrid(this, labels.length, 2, 6, 6, 6, 6);
+        updateLabels();
+
+        SpringUtilities.makeCompactGrid(this, labelList.size(), 2, 6, 6, 6, 6);
+
+        localizedText.addLocaleChangeListener(
+                (oldLocale, newLocale) -> DataEditPanel.this.updateLabels());
+    }
+
+    private void updateLabels() {
+        final String[] labels = {
+                localizedText.format("FullName") + ": ",
+                localizedText.format("Address") + ": ",
+                localizedText.format("Email") + ": ",
+                localizedText.format("OIB") + ": ",
+                localizedText.format("CityCodeResidence") + ": ",
+                localizedText.format("CityCodeWork") + ": ",
+
+                localizedText.format("GrossIncome") + ": ",
+                localizedText.format("DateOfPayment") + "[YYYY/MM/DD]: ",
+
+                localizedText.format("Tax") + "[%]: ",
+                localizedText.format("Surtax") + "[%]: ",
+                localizedText.format("Pension1") + "[%]: ",
+                localizedText.format("Pension2") + "[%]: ",
+        };
+
+        for (int i = 0; i < labelList.size(); i++) {
+            labelList.get(i).setText(labels[i]);
+        }
+
+        logger.debug("Labels updated");
     }
 
     public void updateFromConfig(){

@@ -59,7 +59,7 @@ public class ResultWindow extends JDialog {
                 localizedText.format("Pension1") + ": ",
                 localizedText.format("Pension2") + ": ",
                 localizedText.formatString("%s + %s: ","Pension1", "Pension2"),
-                String.format("%s - %s - %s: ","GrossIncome", "Pension1", "Pension2"),
+                localizedText.formatString("%s - %s - %s: ","GrossIncome", "Pension1", "Pension2"),
 
                 localizedText.format("Tax") + ": ",
                 localizedText.format("Surtax") + ": ",
