@@ -1,11 +1,12 @@
 package com.mirkogrcic.utils;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Calendar;
+import java.io.File;
 import java.util.Date;
-
-import static org.junit.jupiter.api.Assertions.*;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import org.junit.Test;
 
 public class UtilTest {
     /*@org.junit.jupiter.api.BeforeEach
@@ -66,5 +67,21 @@ public class UtilTest {
 
         date = getDate(2030, 8, 13);
         assertEquals("13.08.2030.", Util.formatDateHR(date));
+    }
+
+    @Test
+    public void getSelectedFileWithExtension() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setFileFilter(new FileNameExtensionFilter("Properties file(.ini)", "ini"));
+
+        chooser.setSelectedFile(new File("/abc/def.123"));
+        assertEquals("/abc/def.123.ini", Util.getSelectedFileWithExtension(chooser));
+
+        chooser.setSelectedFile(new File("/abc/def"));
+        assertEquals("/abc/def.ini", Util.getSelectedFileWithExtension(chooser));
+
+        chooser.setSelectedFile(new File("/abc/def.ini"));
+        assertEquals("/abc/def.ini", Util.getSelectedFileWithExtension(chooser));
     }
 }

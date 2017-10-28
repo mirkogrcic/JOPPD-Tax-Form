@@ -3,6 +3,7 @@ package com.mirkogrcic.utils;
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -109,13 +110,34 @@ public class Util {
     public static String showFileSaveDialog(Component parent){
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.setFileFilter(new FileNameExtensionFilter("Properties file(.init)", "ini"));
+        chooser.setFileFilter(new FileNameExtensionFilter("Properties file(.ini)", "ini"));
         if (chooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
-            return chooser.getSelectedFile().getAbsolutePath();
+            return getSelectedFileWithExtension(chooser);
         }
         else {
             return null;
         }
+    }
+
+    /**
+     * Returns the selected file from a JFileChooser, including the extension from
+     * the file filter.
+     */
+    public static String getSelectedFileWithExtension(JFileChooser c) {
+        File file = c.getSelectedFile();
+        String path = file.getAbsolutePath();
+        if (c.getFileFilter() instanceof FileNameExtensionFilter) {
+            String[] exts = ((FileNameExtensionFilter)c.getFileFilter()).getExtensions();
+            String nameLower = c.getSelectedFile().getName().toLowerCase();
+            for (String ext : exts) { // check if it already has a valid extension
+                if (nameLower.endsWith('.' + ext.toLowerCase())) {
+                    return file.getAbsolutePath(); // if yes, return as-is
+                }
+            }
+            // if not, append the first extension from the selected filter
+            return path + '.' + exts[0];
+        }
+        return path;
     }
 
     public static void showMessageBox(String message){

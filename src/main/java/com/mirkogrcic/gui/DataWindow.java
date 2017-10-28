@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 public class DataWindow extends JFrame {
 
-    private final static Logger logger = LoggerFactory.getLogger(com.mirkogrcic.Application.class.getName());
+    private final static Logger logger = LoggerFactory.getLogger(DataWindow.class.getName());
     private final static SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy/MM/dd");
 
     private Data config;
@@ -163,6 +163,10 @@ public class DataWindow extends JFrame {
                     String filePath;
 
                     filePath = Util.showFileOpenDialog(DataWindow.this);
+                    if (filePath == null) {
+                        logger.debug("Cancelled");
+                        return;
+                    }
                     logger.info(filePath);
                     try {
                         config.load(filePath);
@@ -185,6 +189,10 @@ public class DataWindow extends JFrame {
                     String filePath;
 
                     filePath = Util.showFileSaveDialog(DataWindow.this);
+                    if (filePath == null) {
+                        logger.debug("Cancelled");
+                        return;
+                    }
                     logger.info(filePath);
                     try {
                         new File(filePath).createNewFile();
