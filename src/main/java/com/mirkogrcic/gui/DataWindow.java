@@ -12,6 +12,7 @@ import com.mirkogrcic.FormFiller.JOPPD2;
 import com.mirkogrcic.FormFiller.JOPPD3;
 import com.mirkogrcic.Locales.Locales;
 import com.mirkogrcic.Locales.LocalizedText;
+import com.mirkogrcic.Locales.LocalizedText.LocaleChangeListener;
 import com.mirkogrcic.calculator.Calculator;
 import com.mirkogrcic.calculator.Calculator.Result;
 import com.mirkogrcic.calculator.TaxValues;
@@ -115,6 +116,16 @@ public class DataWindow extends JFrame {
                     calculateButton.setText(localizedText.format("CalculateBtn"));
                     logger.info("Locale changed");
                 }
+            }
+        });
+
+        localizedText.addLocaleChangeListener(new LocaleChangeListener() {
+            @Override
+            public void localeChanged(Locale oldLocale, Locale newLocale) {
+                calculateButton.setText(localizedText.format("CalculateBtn"));
+                generateImagesButton.setText(localizedText.format("GenerateImagesBtn"));
+                loadButton.setText(localizedText.format("LoadBtn"));
+                saveButton.setText(localizedText.format("SaveBtn"));
             }
         });
 
