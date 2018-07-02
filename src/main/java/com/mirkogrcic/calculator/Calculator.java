@@ -2,6 +2,7 @@ package com.mirkogrcic.calculator;
 
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class Calculator {
     private BigDecimal grossIncome;  // Bruto plaća
@@ -50,18 +51,39 @@ public class Calculator {
             throw new IllegalStateException("taxValues must be specified");
 
         this.result = new Result();
+        
+        int precision = 2;
+        RoundingMode roundingMode = RoundingMode.HALF_UP;
 
+        // Pension
         this.result.pension1 = this.grossIncome.multiply(this.taxValues.getPension1());
+        this.result.pension1 = this.result.pension1.setScale(precision, roundingMode);
+
         this.result.pension2 = this.grossIncome.multiply(this.taxValues.getPension2());
+        this.result.pension2 = this.result.pension2.setScale(precision, roundingMode);
+
         this.result.pension = this.result.pension1.add(this.result.pension2);
+        this.result.pension = this.result.pension.setScale(precision, roundingMode);
+
         this.result.grossPensionSub = this.grossIncome.subtract(this.result.pension);
+        this.result.grossPensionSub = this.result.grossPensionSub.setScale(precision, roundingMode);
 
+        // TAX
         this.result.tax = this.result.grossPensionSub.multiply(this.taxValues.getTax());
-        this.result.surtax = this.result.tax.multiply(this.taxValues.getSurtax());
-        this.result.taxSurtaxSum = this.result.tax.add(this.result.surtax);
+        this.result.tax = this.result.tax.setScale(precision, roundingMode);
 
+        this.result.surtax = this.result.tax.multiply(this.taxValues.getSurtax());
+        this.result.surtax = this.result.surtax.setScale(precision, roundingMode);
+
+        this.result.taxSurtaxSum = this.result.tax.add(this.result.surtax);
+        this.result.taxSurtaxSum = this.result.taxSurtaxSum.setScale(precision, roundingMode);
+
+        // TOTALS
         this.result.totalSum = this.result.pension.add(this.result.taxSurtaxSum);
+        this.result.totalSum = this.result.totalSum.setScale(precision, roundingMode);
+
         this.result.netIncome = this.grossIncome.subtract(this.result.totalSum);
+        this.result.netIncome = this.result.netIncome.setScale(precision, roundingMode);
 
         return this.result;
     }
