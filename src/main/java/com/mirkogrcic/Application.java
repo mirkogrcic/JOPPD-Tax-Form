@@ -1,6 +1,7 @@
 package com.mirkogrcic;
 
 import com.mirkogrcic.gui.DataWindow;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import javax.swing.JFrame;
@@ -17,8 +18,15 @@ public class Application {
         Data data = new Data();
         if( args.length == 0 ){
             data.loadStream(System.class.getResourceAsStream("/data.ini"));
+            logger.info("Loading default configuration");
         }else{
-            data.load(args[0]);
+            try {
+                data.load(args[0]);
+            } catch (FileNotFoundException ex) {
+                data.loadStream(System.class.getResourceAsStream("/data.ini"));
+                logger.error("File not found", args[0]);
+                logger.info("Loading default configuration");
+            }
         }
 
         JFrame frame = new DataWindow(data);
