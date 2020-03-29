@@ -41,6 +41,9 @@ public class DataEditPanel extends JPanel {
         final String[] command_names = {
                 "fullName",
                 "address",
+                "addressPlace",
+                "addressStreet",
+                "addressNumber",
                 "email",
                 "oib",
                 "cityCodeResidence",
@@ -58,6 +61,9 @@ public class DataEditPanel extends JPanel {
         final String[] values = {
                 config.getFullName(),
                 config.getAddress(),
+                config.getAddressPlace(),
+                config.getAddressStreet(),
+                config.getAddressNumber() != null ? config.getAddressNumber().toString() : "",
                 config.getEmail(),
                 config.getOib(),
                 config.getCityCodeResidence(),
@@ -96,6 +102,9 @@ public class DataEditPanel extends JPanel {
         final String[] labels = {
                 localizedText.format("FullName") + ": ",
                 localizedText.format("Address") + ": ",
+                localizedText.format("AddressPlace") + ": ",
+                localizedText.format("AddressStreet") + ": ",
+                localizedText.format("AddressNumber") + ": ",
                 localizedText.format("Email") + ": ",
                 localizedText.format("OIB") + ": ",
                 localizedText.format("CityCodeResidence") + ": ",
@@ -121,6 +130,9 @@ public class DataEditPanel extends JPanel {
         final String[] values = {
                 config.getFullName(),
                 config.getAddress(),
+                config.getAddressPlace(),
+                config.getAddressStreet(),
+                config.getAddressNumber().toString(),
                 config.getEmail(),
                 config.getOib(),
                 config.getCityCodeResidence(),
@@ -181,6 +193,15 @@ public class DataEditPanel extends JPanel {
                     break;
                 case "address":
                     config.setAddress(value);
+                    break;
+                case "addressPlace":
+                    config.setAddressPlace(value);
+                    break;
+                case "addressStreet":
+                    config.setAddressStreet(value);
+                    break;
+                case "addressNumber":
+                    config.setAddressNumber(Integer.parseInt(value));
                     break;
                 case "email":
                     config.setEmail(value);

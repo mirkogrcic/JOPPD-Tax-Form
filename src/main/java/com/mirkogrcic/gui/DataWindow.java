@@ -17,6 +17,8 @@ import com.mirkogrcic.calculator.Calculator;
 import com.mirkogrcic.calculator.Calculator.Result;
 import com.mirkogrcic.calculator.TaxValues;
 import com.mirkogrcic.calculator.TaxValuesImpl;
+import com.mirkogrcic.exporters.Exporter;
+import com.mirkogrcic.exporters.XmlExporter;
 import com.mirkogrcic.utils.Util;
 import java.awt.ComponentOrientation;
 import java.awt.FlowLayout;
@@ -39,8 +41,14 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 public class DataWindow extends JFrame {
 
@@ -90,6 +98,10 @@ public class DataWindow extends JFrame {
         generateImagesButton.setActionCommand("GenerateImages");
         generateImagesButton.addActionListener(new ButtonClickListener());
 
+        JButton exportButton = new JButton(localizedText.format("ExportBtn"));
+        exportButton.setActionCommand("Export");
+        exportButton.addActionListener(new ButtonClickListener());
+
         JButton loadButton = new JButton(localizedText.format("LoadBtn"));
         loadButton.setActionCommand("Load");
         loadButton.addActionListener(new ButtonClickListener());
@@ -100,6 +112,7 @@ public class DataWindow extends JFrame {
 
         buttonsPanel.add(calculateButton);
         buttonsPanel.add(generateImagesButton);
+        buttonsPanel.add(exportButton);
         buttonsPanel.add(loadButton);
         buttonsPanel.add(saveButton);
 
@@ -114,6 +127,7 @@ public class DataWindow extends JFrame {
                 if( propertyChangeEvent.getPropertyName().equals("locale") ){
                     localizedText.updateLocale();
                     calculateButton.setText(localizedText.format("CalculateBtn"));
+                    exportButton.setText(localizedText.format("ExportBtn"));
                     logger.info("Locale changed");
                 }
             }
@@ -124,6 +138,7 @@ public class DataWindow extends JFrame {
             public void localeChanged(Locale oldLocale, Locale newLocale) {
                 calculateButton.setText(localizedText.format("CalculateBtn"));
                 generateImagesButton.setText(localizedText.format("GenerateImagesBtn"));
+                exportButton.setText(localizedText.format("ExportBtn"));
                 loadButton.setText(localizedText.format("LoadBtn"));
                 saveButton.setText(localizedText.format("SaveBtn"));
             }
@@ -274,6 +289,52 @@ public class DataWindow extends JFrame {
                         imageWindows[i] = window;
                     }*/
 
+                    break;
+                }
+                case "Export": {
+                    JFileChooser chooser = new JFileChooser();
+                    chooser.setMultiSelectionEnabled(false);
+                    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+
+                    // Create extensions
+                    FileNameExtensionFilter eCitizenXml = new FileNameExtensionFilter("eCitizen JOPPD XML files (*.xml)", "xml");
+                    chooser.addChoosableFileFilter(eCitizenXml);
+
+                    chooser.setSelectedFile(new File("export.xml"));
+                    chooser.setFileFilter(eCitizenXml);
+                    chooser.setAcceptAllFileFilterUsed(false);
+                    String filePath = "";
+                    if (chooser.showSaveDialog(DataWindow.this) == JFileChooser.APPROVE_OPTION) {
+                        logger.info("getSelectedFile() : " + chooser.getSelectedFile());
+                        filePath = chooser.getSelectedFile().getAbsolutePath();
+                    } else {
+                        logger.info("No file selected");
+                        return;
+                    }
+
+                    FileFilter chosenFileFilter = chooser.getFileFilter();
+                    Exporter exporter;
+                    if (chosenFileFilter == eCitizenXml) {
+                        exporter = new XmlExporter(config, result);
+                        try {
+                            exporter.exportFile(filePath);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Util.showMessageBox(DataWindow.this, localizedText.format("ErrorWritingFile"));
+                        } catch (TransformerException e) {
+                            e.printStackTrace();
+                            Util.showMessageBox(DataWindow.this, localizedText.format("ErrorExporting"));
+                        } catch (SAXException e) {
+                            e.printStackTrace();
+                            Util.showMessageBox(DataWindow.this, localizedText.format("ErrorExporting"));
+                        } catch (ParserConfigurationException e) {
+                            e.printStackTrace();
+                            Util.showMessageBox(DataWindow.this, localizedText.format("ErrorExporting"));
+                        }
+                    } else {
+                        Util.showMessageBox(DataWindow.this, localizedText.format("InvalidFileExtension"));
+                    }
                     break;
                 }
             }

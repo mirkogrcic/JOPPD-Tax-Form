@@ -28,7 +28,12 @@ public class Data {
 
     // Personal
     private String fullName;
+    private String name;
+    private String surname;
     private String address;
+    private String addressPlace;
+    private String addressStreet;
+    private Integer addressNumber;
     private String email;
     private String oib;
     private String cityCodeResidence;
@@ -70,7 +75,12 @@ public class Data {
 
         section = prefs.node("Osobne");
         this.fullName = section.get("puno_ime", "");
+        this.name = section.get("ime", "");
+        this.surname = section.get("prezime", "");
         this.address = section.get("adresa", "");
+        this.addressPlace = section.get("adresaMjesto", "");
+        this.addressStreet = section.get("adresaUlica", "");
+        this.addressNumber = parseInt(section.get("adresaBroj", ""));
         this.email = section.get("email", "");
         this.oib = section.get("oib", "");
         this.cityCodeResidence = section.get("sifra_opcine_grada_prebivalista_boravista", "");
@@ -85,6 +95,30 @@ public class Data {
         section = prefs.node("Placa");
         this.date = parseDate(section.get("datum_primitka", ""));
         this.grossIncome = parseDecimal(section.get("bruto_placa", ""));
+
+        // Process
+        this.fullName = this.fullName.trim();
+
+        // Update missing
+        if (this.name.equals("") || this.surname.equals("")) {
+            int index = this.fullName.lastIndexOf(' ');
+            if (index == -1) {
+                logger.warn("Could not parse full name");
+                return;
+            }
+            if (this.name.equals("")) {
+                this.name = this.fullName.substring(0, index);
+            }
+            if (this.surname.equals("")) {
+                this.surname = this.fullName.substring(index + 1);
+            }
+        } else if (this.fullName.equals("")) {
+            this.fullName = this.name + " " + this.surname;
+        }
+
+        // Process
+        this.name = this.name.trim();
+        this.surname = this.surname.trim();
     }
 
     public void loadStream(InputStream stream)
@@ -114,7 +148,12 @@ public class Data {
 
         section = prefs.node("Osobne");
         section.put("puno_ime", fullName);
+        section.put("ime", name);
+        section.put("prezime", surname);
         section.put("adresa", address);
+        section.put("adresaMjesto", address);
+        section.put("adresaUlica", address);
+        section.put("adresaBroj", address);
         section.put("email", email);
         section.put("oib", oib);
         section.put("sifra_opcine_grada_prebivalista_boravista", cityCodeResidence);
@@ -171,12 +210,52 @@ public class Data {
         this.fullName = fullName;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
     public String getAddress() {
         return address;
     }
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getAddressPlace() {
+        return addressPlace;
+    }
+
+    public void setAddressPlace(String addressPlace) {
+        this.addressPlace = addressPlace;
+    }
+
+    public String getAddressStreet() {
+        return addressStreet;
+    }
+
+    public void setAddressStreet(String addressStreet) {
+        this.addressStreet = addressStreet;
+    }
+
+    public Integer getAddressNumber() {
+        return addressNumber;
+    }
+
+    public void setAddressNumber(Integer addressNumber) {
+        this.addressNumber = addressNumber;
     }
 
     public String getEmail() {
@@ -261,6 +340,11 @@ public class Data {
 
     private BigDecimal parseDecimal(String value) {
         return new BigDecimal(value);
+    }
+
+    private Integer parseInt(String value) {
+        if (value.equals("")) return null;
+        return Integer.parseInt(value);
     }
 
     private Date parseDate(String value) {
